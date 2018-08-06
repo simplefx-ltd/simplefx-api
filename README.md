@@ -40,4 +40,4 @@ Visit simplefx interactive api https://simplefx.com/docs/api/swagger
 #### List your accounts
 * Navigate to Accounts - GET /api/v3/accounts
 * Expand "Try it out", and click exeute.
-* you will get list of your trading accounts in the response.
+* You will get list of your trading accounts in the response.
