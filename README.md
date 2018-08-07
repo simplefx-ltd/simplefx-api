@@ -17,7 +17,7 @@
 Visit simplefx interactive api https://simplefx.com/docs/api/swagger
 
 #### Obtain ACCESS TOKEN
-* Navigate to "Authentication Post/api/v3/auth/key", exapnd it, and exapnd "Try it out" button.
+* Navigate to "Authentication / Post /api/v3/auth/key", exapnd it, and exapnd "Try it out" button.
 * In Edit value you will see 
 ```
 {
@@ -41,3 +41,26 @@ Visit simplefx interactive api https://simplefx.com/docs/api/swagger
 * Navigate to Accounts - GET /api/v3/accounts
 * Expand "Try it out", and click exeute.
 * You will get list of your trading accounts in the response.
+
+### Understanding the api
+
+The Api Key can not be used to authorize requests, you need to obtain ACCESS TOKEN for this.
+  Try again obtaining access token and look at the message sent. Important things here are
+* body - a json format of your key and secret
+* header - "Content-Type: application/json" - so the server understans your body correctly.
+
+Try again authorizating api with access token.
+There is no request sent. It justs embeds your ACCESS TOKEN to browser client, so it will sent this token with further requests.
+
+Try again /api/v3/accounts, and look at the message.
+Your token is attached as a http header: "Authorization: Bearer <ACCESS_TOKEN>"
+
+## Create your applicaiton based on swagger docs.
+
+Swagger interactive api allows you to interact with the server, showing messages sent and received and allows you to see whole comunication.
+
+Read more about swagger https://swagger.io/
+
+Additionaly it allows to automaticly create api libraries in most popular programing languages:
+
+See: https://swagger.io/tools/swagger-codegen/
