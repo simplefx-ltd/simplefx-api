@@ -64,3 +64,15 @@ Read more about swagger https://swagger.io/
 Additionaly it allows to automaticly create api libraries in most popular programing languages:
 
 See: https://swagger.io/tools/swagger-codegen/
+
+# Quotes and prices
+
+Quotes and prices can not be obtained with http API. Prices changes within milliseconds, so you need to connect to quotes stream.
+In SimpleFX we use signalr (see https://docs.microsoft.com/en-us/aspnet/signalr ), served from address 
+https://webquotes-v3.simplefx.com/signalr/
+
+With descriptor file at 
+https://webquotes-v3.simplefx.com/signalr/
+
+
+
