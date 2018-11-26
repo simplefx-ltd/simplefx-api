@@ -61,5 +61,80 @@ Additionally, it allows to automatically create API libraries in the most popula
 
 Quotes and prices cannot be obtained with an http API. Prices change within milliseconds, so you need to connect to a quotes stream. In SimpleFX we use signalr (see https://docs.microsoft.com/en-us/aspnet/signalr ), served from the address  https://webquotes-v3.simplefx.com/signalr/ . You can find the descriptor file here: https://webquotes-v3.simplefx.com/signalr/hubs
 
+## Obtain last prices
 
+Request:
+```
+{
+ "H":"quotessubscribehub",
+ "M":"getLastPrices",
+ "A":[["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]],
+ "I":0
+}
+```
+* hub - quotessubscribehub
+* method - getLastPrices
+* arguments:
+  * 0 - list of instruments - ["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]
 
+Response:
+```
+{
+  "R": {
+    "data": [
+      { "s": "BTCUSD", "b": 3930.37, "a": 3979.59, "t": 1543223911 },
+      { "s": "LTCUSD", "b": 30.3267, "a": 31.8091, "t": 1543223911 },
+      { "s": "ETHUSD", "b": 112.38, "a": 115.998, "t": 1543223911 },
+      { "s": "TLRY.US","b": 115.39, "a": 116.1, "t": 1542995999 },
+      { "s": "GWPH.US", "b": 123.57, "a": 124.1, "t": 1542995999 }
+    ],
+    "code": 200,
+    "message": "OK",
+    "webRequestId": null
+  },
+  "I": "0"
+}
+```
+* s - symbol of an instrument
+* b - bid price
+* a - ask (offer) price
+* t - unix time stamp of last price
+
+## Obtain last prices
+
+Request:
+```
+{
+  "H":"quotessubscribehub",
+  "M":"subscribeList",
+  "A":[["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]],
+  "I":5
+}
+```
+* hub - quotessubscribehub
+* method - subscribeList
+* arguments:
+  * 0 - list of instruments - ["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]
+
+Response - subscribe confirmation:
+`{"R":{"code":200,"message":"OK","webRequestId":null},"I":"5"}`
+
+Events - incoming quotes
+```
+{
+  "C": "d-7964E528-B,0|_7,1|_8,1",
+  "M": [
+    {
+      "H": "QuotesSubscribeHub",
+      "M": "ReceiveQuotes",
+      "A": [
+        [
+          { "s": "LTCUSD", "b": 30.3265, "a": 31.8097, "t": 1543223912 },
+          { "s": "BTCUSD", "b": 3930.35, "a": 3979.67, "t": 1543223912 },
+          { "s": "ETHUSD", "b": 112.379, "a": 116, "t": 1543223912 }
+        ]
+      ]
+    }
+  ]
+}
+```
