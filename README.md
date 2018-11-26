@@ -59,7 +59,7 @@ Additionally, it allows to automatically create API libraries in the most popula
 
 # Quotes and prices
 
-Quotes and prices cannot be obtained with an http API. Prices change within milliseconds, so you need to connect to a quotes stream. In SimpleFX we use signalr (see https://docs.microsoft.com/en-us/aspnet/signalr ), served from the address  https://webquotes-v3.simplefx.com/signalr/ . You can find the descriptor file here: https://webquotes-v3.simplefx.com/signalr/
+Quotes and prices cannot be obtained with an http API. Prices change within milliseconds, so you need to connect to a quotes stream. In SimpleFX we use signalr (see https://docs.microsoft.com/en-us/aspnet/signalr ), served from the address  https://webquotes-v3.simplefx.com/signalr/ . You can find the descriptor file here: https://webquotes-v3.simplefx.com/signalr/hubs
 
 
 
