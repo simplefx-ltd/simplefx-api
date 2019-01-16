@@ -29,6 +29,7 @@ Visit the SimpleFX interactive API at https://simplefx.com/docs/api/swagger
 * Click execute
   * Your browser will send the request to SimpleFX server
 * You can check the response either in the developer tools or in the response area below
+  * Press F12 for browser developer tools and find "network" tab.
 * If your API key is verified and the secret is correct, the response code will be 200 and you will get an ACCESS TOKEN
 * Now just copy your token from data.token to clipboard
 
