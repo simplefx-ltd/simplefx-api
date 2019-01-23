@@ -101,7 +101,7 @@ Response:
 * a - ask (offer) price
 * t - unix time stamp of last price
 
-## Subscrube for quotes
+## Subscribe for quotes
 
 Request:
 ```
