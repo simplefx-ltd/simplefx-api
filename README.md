@@ -26,6 +26,12 @@ Visit the SimpleFX interactive API at https://simplefx.com/docs/api/swagger
 }
 ```
 * Fill in your API key Id, and API key secret
+```
+{
+  "clientId": "989c4d4441***********4c1401a9fe8",
+  "clientSecret": "bb****d6-a**8-4**e-a**c-4e********97"
+}
+```
 * Click execute
   * Your browser will send the request to SimpleFX server
 * You can check the response either in the developer tools or in the response area below
