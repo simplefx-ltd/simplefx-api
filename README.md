@@ -3,7 +3,11 @@
 
 ### Obtain Api Key
 * Visit https://app.simplefx.com/
-* Go to menu (hamburger button), select API and click Create API Key
+* Go to menu (hamburger button), select Settings
+    * https://app.simplefx.com/settings
+  * select API
+    * https://app.simplefx.com/api-client
+  * and click Create API Key
 * Fill API Key creation fields
   * Name - you can get creative here
   * Trade Permissions - select all available checkboxes, your key will have all permissions
