@@ -73,7 +73,11 @@ Swagger’s interactive API lets you test server interactions, view messages sen
 
 ## Quotes and Prices
 
-Prices and quotes cannot be retrieved via a standard HTTP API because they change within milliseconds. Instead, SimpleFX uses **SignalR** for streaming quotes. You can connect to the quotes stream at this endpoint: [https://webquotes-v3.simplefx.com/signalr/](https://webquotes-v3.simplefx.com/signalr/). The descriptor file is available [here](https://webquotes-v3.simplefx.com/signalr/hubs).
+### **Important Note: The SignalR API is Deprecated**
+
+The SimpleFX SignalR API for streaming quotes has been deprecated. The current implementation uses **SignalR 2.x** (not **SignalR Core**). Future API versions may switch to more modern technologies for real-time data delivery. Please plan accordingly.
+
+Quotes and prices cannot be retrieved via a standard HTTP API because they change within milliseconds. Instead, SimpleFX uses **SignalR** for streaming quotes. You can connect to the quotes stream at this endpoint: [https://webquotes-v3.simplefx.com/signalr/](https://webquotes-v3.simplefx.com/signalr/). The descriptor file is available [here](https://webquotes-v3.simplefx.com/signalr/hubs).
 
 ### Obtain Latest Prices
 
