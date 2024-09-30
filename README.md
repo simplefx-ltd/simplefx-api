@@ -1,4 +1,4 @@
-# SimpleFX API Documentation
+# SimpleFX REST API Documentation
 
 ## Usage
 
@@ -71,11 +71,201 @@ Once you obtain the access token, it will be embedded in the browser client and 
 
 Swagger’s interactive API lets you test server interactions, view messages sent and received, and analyze the entire communication process. Learn more about Swagger [here](https://swagger.io/). You can also use [Swagger Codegen](https://swagger.io/tools/swagger-codegen/) to automatically generate API libraries in popular programming languages.
 
-## Quotes and Prices
+---
+
+# SimpleFX WebSocket API Documentation
+
+## WebSocket Connection
+
+The WebSocket connection is established at:  
+`wss://web-quotes.simplefx.com/websocket/quotes`
+
+To access the WebSocket API, you must first authenticate using the SimpleFX REST API and obtain an access token.
+
+### WebSocket Authentication
+Before sending any messages, you need to authenticate by passing a valid token obtained from the REST API. Without authentication, WebSocket requests will fail.
+
+---
+
+### Subscribe to Quotes
+
+This method subscribes to real-time price updates for a list of symbols.
+
+**Request**:
+```json
+{
+  "p": "/subscribe/addList",
+  "i": 1, 
+  "d": ["BTCUSD", "LTCUSD", "ETHUSD"]
+}
+```
+
+- **p**: Request type.
+- **i**: Request ID (incremented for each request).
+- **d**: List of symbols to subscribe to.
+
+**Response**:
+Upon successful subscription, the WebSocket will send a confirmation:
+```json
+{
+  "p": "/subscribe/addList",
+  "i": 1
+}
+```
+- **p**: Request type.
+- **i**: The request ID matching the original subscription request.
+
+---
+
+### Unsubscribe from Quotes
+
+To unsubscribe from a list of symbols or all symbols:
+
+**Request** (Unsubscribe from specific symbols):
+```json
+{
+  "p": "/subscribe/removeList",
+  "i": 2,
+  "d": ["BTCUSD", "ETHUSD"]
+}
+```
+- **p**: Request type.
+- **i**: Request ID.
+- **d**: List of symbols to unsubscribe from.
+
+**Response**:
+```json
+{
+  "p": "/subscribe/removeList",
+  "i": 2
+}
+```
+- **p**: Request type.
+- **i**: The request ID matching the original unsubscribe request.
+
+**Request** (Unsubscribe from all symbols):
+```json
+{
+  "p": "/subscribe/removeAll",
+  "i": 3
+}
+```
+- **p**: Request type.
+- **i**: Request ID.
+
+**Response**:
+```json
+{
+  "p": "/subscribe/removeAll",
+  "i": 3
+}
+```
+- **p**: Request type.
+- **i**: The request ID matching the original unsubscribe request.
+
+---
+
+### Get Last Prices
+
+This request retrieves the last known prices for a set of symbols.
+
+**Request**:
+```json
+{
+  "p": "/lastprices/list",
+  "i": 4,
+  "d": ["BTCUSD", "LTCUSD", "ETHUSD"]
+}
+```
+
+- **p**: Path to request the last prices for the symbols.
+- **i**: Request ID.
+- **d**: List of symbols to fetch the last prices for.
+
+**Response**:
+```json
+{
+  "p": "/lastprices/list",
+  "i": 4,
+  "d": [
+    {"s": "BTCUSD", "b": 3930.37, "a": 3979.59, "t": 1643223911},
+    {"s": "LTCUSD", "b": 30.32, "a": 31.81, "t": 1643223911},
+    {"s": "ETHUSD", "b": 112.38, "a": 115.99, "t": 1643223911}
+  ]
+}
+```
+
+- **p**: Path confirming the response to the last prices request.
+- **i**: Request ID matching the original request.
+- **d**: List of symbols with their bid (`b`), ask (`a`), and timestamp (`t`).
+
+---
+
+### Real-Time Quote Updates
+
+Once subscribed, real-time quotes for the subscribed symbols are received automatically via the WebSocket.
+
+**Event - Incoming Quote Update**:
+```json
+{
+  "C": "d-7964E528-B,0|_7,1|_8,1",
+  "M": [
+    {
+      "H": "QuotesSubscribeHub",
+      "M": "ReceiveQuotes",
+      "A": [
+        [
+          {"s": "BTCUSD", "b": 3930.35, "a": 3979.67, "t": 1643223912},
+          {"s": "ETHUSD", "b": 112.38, "a": 115.99, "t": 1643223912}
+        ]
+      ]
+    }
+  ]
+}
+```
+
+- **s**: Symbol of the instrument.
+- **b**: Bid price.
+- **a**: Ask (offer) price.
+- **t**: Unix timestamp of the last price update.
+
+---
+
+### Error Messages
+
+If there is an issue with your WebSocket request, you may receive an error message.
+
+**Error Response Example**:
+```json
+{
+  "e": {
+    "code": 400,
+    "message": "Invalid symbol list"
+  }
+}
+```
+- **e**: Error object.
+  - **code**: HTTP-like error code.
+  - **message**: Description of the error.
+
+---
+
+## WebSocket Disconnection
+
+To disconnect from the WebSocket quotes stream, you can send a disconnection request, or simply close the WebSocket connection. 
+
+**Disconnection Example**:
+```json
+WebSocket connection closed for client.
+```
+
+---
+
+# SimpleFX SignalR API
 
 ### **Important Note: The SignalR API is Deprecated**
 
-The SimpleFX SignalR API for streaming quotes has been deprecated. The current implementation uses **SignalR 2.x** (not **SignalR Core**). Future API versions may switch to more modern technologies for real-time data delivery. Please plan accordingly.
+The SimpleFX SignalR API for streaming quotes has been deprecated. The current implementation uses **SignalR 2.x** (not **SignalR Core**). There is no plan to migrate the SignalR API to SignalR Core. Please plan accordingly.
 
 Quotes and prices cannot be retrieved via a standard HTTP API because they change within milliseconds. Instead, SimpleFX uses **SignalR** for streaming quotes. You can connect to the quotes stream at this endpoint: [https://webquotes-v3.simplefx.com/signalr/](https://webquotes-v3.simplefx.com/signalr/). The descriptor file is available [here](https://webquotes-v3.simplefx.com/signalr/hubs).
 
