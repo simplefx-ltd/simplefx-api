@@ -1,102 +1,262 @@
-# simplefx-api
+# SimpleFX REST API Documentation
+
 ## Usage
 
-### Obtain Api Key
-* Visit https://app.simplefx.com/
-* Go to menu (hamburger button), select Settings
-    * https://app.simplefx.com/settings
-  * select API
-    * https://app.simplefx.com/api-client
-  * and click Create API Key
-* Fill API Key creation fields
-  * Name - you can get creative here
-  * Trade Permissions - select all available checkboxes, your key will have all permissions
-  * IP Address whitelist - leave this list empty, your key will have access from around the world
-  * Click Craete
-  * **Copy and save api key secret**, you will not see it again
-  * Check API Key Manager again, your api key should be there on confirmed or pending list
-  * You need to confirm your key with two-factor authentication, or with an email confirmation link if you do not have 2FA configured
+### Obtain API Key
 
-### Try interactive api
-Visit the SimpleFX interactive API at https://simplefx.com/docs/api/swagger
+1. Visit [SimpleFX](https://app.simplefx.com/).
+2. Go to the menu (hamburger button) and select **Settings**.
+   * Alternatively, you can directly visit: [Settings](https://app.simplefx.com/settings).
+3. Select **API**.
+   * Alternatively, visit: [API Client](https://app.simplefx.com/api-client).
+4. Click **Create API Key**.
+5. Fill in the API Key creation fields:
+   * **Name**: Choose any name you prefer.
+   * **Trade Permissions**: Select checkboxes with permissions you need.
+   * **IP Address Whitelist**: Add your public IP address or leave this field empty if you want your key to be accessible from anywhere.
+6. Click **Create**.
+7. Copy and save your **API key secret**, as you will not be able to view it again.
+8. Go back to the **API Key Manager**; your key should appear in either the confirmed or pending list.
+9. Copy **API key ID** for the newly created key.
+10. Confirm your API key using two-factor authentication (2FA) or, if 2FA is not configured, via the email confirmation link.
+
+### Try the Interactive API
+
+Visit the [SimpleFX interactive API](https://simplefx.com/docs/api/swagger) to test API functionality.
 
 #### Obtain ACCESS TOKEN
-* Go to Authentication - POST /api/v3/auth/key, expand it and click Try it out
-* In Edit value you will see 
-```
+
+1. Navigate to **Authentication - POST /api/v3/auth/key**, expand it, and click **Try it out**.
+2. You will see the following in the **Edit value** field:
+    ```json
+    {
+      "clientId": "string",
+      "clientSecret": "string"
+    }
+    ```
+3. Replace `"string"` with your **API key ID** and **API key secret**:
+    ```json
+    {
+      "clientId": "989c4d4441***********4c1401a9fe8",
+      "clientSecret": "bb****d6-a**8-4**e-a**c-4e********97"
+    }
+    ```
+4. Click **Execute**.
+   * This will send a request to the SimpleFX server.
+5. You can view the response either in the developer tools (press F12) under the **Network** tab or in the response area below.
+6. If the API key and secret are valid, the response code will be **200**, and you will receive an ACCESS TOKEN.
+7. Copy the token (`data.token`) to your clipboard.
+
+#### Authorize the Interactive API
+
+1. At the top of the interactive API page, click the **Authorize** button.
+2. In the **Value** field, enter your ACCESS TOKEN, and click **Authorize**.
+3. You are now authorized to use other endpoints in the interactive API.
+
+#### List Your Accounts
+
+1. Navigate to **Accounts - GET /api/v3/accounts**.
+2. Expand **Try it out** and click **Execute**.
+3. You will receive a response with a list of your trading accounts.
+
+### Understanding the API
+
+The API Key alone cannot be used to authorize requests. You must first obtain an ACCESS TOKEN. Here's a breakdown of the process:
+
+1. **Body**: A JSON format containing your API key ID and secret.
+2. **Header**: Ensure the `Content-Type: application/json` header is included so the server understands your request correctly.
+
+Once you obtain the access token, it will be embedded in the browser client and included in further requests. For example, in the `/api/v3/accounts` endpoint, your token will be added as an HTTP header: `Authorization: Bearer <ACCESS_TOKEN>`.
+
+### Create Your Application Using Swagger Docs
+
+Swagger’s interactive API lets you test server interactions, view messages sent and received, and analyze the entire communication process. Learn more about Swagger [here](https://swagger.io/). You can also use [Swagger Codegen](https://swagger.io/tools/swagger-codegen/) to automatically generate API libraries in popular programming languages.
+
+---
+
+# SimpleFX WebSocket API Documentation
+
+Quotes and prices cannot be retrieved via a REST HTTP API because they change within milliseconds. Instead, SimpleFX uses **WebSocket** for streaming quotes.
+
+## WebSocket Connection
+
+The WebSocket connection is established at:  
+`wss://web-quotes-core.simplefx.com/websocket/quotes`
+
+Once connected, the serwer will emit `/quotes/subscribed` event with a list of last prices.
+
+---
+
+### Subscribe to Quotes
+
+This method subscribes to real-time price updates for a list of symbols.
+
+**Request**:
+```json
 {
-  "clientId": "string",
-  "clientSecret": "string"
+  "p": "/subscribe/addList",
+  "i": 1, 
+  "d": ["BTCUSD", "LTCUSD", "ETHUSD"]
 }
 ```
-* Fill in your API key Id, and API key secret
-```
+
+- **p**: Request type.
+- **i**: Request ID (incremented for each request).
+- **d**: List of symbols to subscribe to.
+
+**Response**:
+Upon successful subscription, the WebSocket will send a confirmation:
+```json
 {
-  "clientId": "989c4d4441***********4c1401a9fe8",
-  "clientSecret": "bb****d6-a**8-4**e-a**c-4e********97"
+  "p": "/subscribe/addList",
+  "i": 1
 }
 ```
-* Click execute
-  * Your browser will send the request to SimpleFX server
-* You can check the response either in the developer tools or in the response area below
-  * Press F12 for browser developer tools and find "network" tab.
-* If your API key is verified and the secret is correct, the response code will be 200 and you will get an ACCESS TOKEN
-* Now just copy your token from data.token to clipboard
+- **p**: Request type.
+- **i**: The request ID matching the original subscription request.
 
-#### Authorize interactive api
-* At the top of the interactive API page there is an Authorize button
-* Click it, fill the Value field with your ACCESS TOKEN and then click Authorize
-* Now you can now use the other enpdpoint of the interactive API
+---
 
-#### List your accounts
-* Navigate to Accounts - GET /api/v3/accounts
-* Expand Try it out and click Execute
-* As a response you will get a list of your trading accounts
+### Unsubscribe from Quotes
 
-### Understanding the api
+To unsubscribe from a list of symbols or all symbols:
 
-The API Key cannot be used to authorize requests; in order to do that, you need to obtain the ACCESS TOKEN. Go through the process of obtaining the access token again and look at the message sent. The important things here are:
-* body - a json format of your key and secret
-* header "Content-Type: application/json" - so the server understans your body correctly.
+**Request** (Unsubscribe from specific symbols):
+```json
+{
+  "p": "/subscribe/removeList",
+  "i": 2,
+  "d": ["BTCUSD", "ETHUSD"]
+}
+```
+- **p**: Request type.
+- **i**: Request ID.
+- **d**: List of symbols to unsubscribe from.
 
-Try again authorizing API with the access token. There is no request sent; it just embeds your ACCESS TOKEN in the browser client, so it will be sent with further requests.
+**Response**:
+```json
+{
+  "p": "/subscribe/removeList",
+  "i": 2
+}
+```
+- **p**: Request type.
+- **i**: The request ID matching the original unsubscribe request.
 
-Try again /api/v3/accounts, and look at the message. Your token is attached as a http header: "Authorization: Bearer <ACCESS_TOKEN>"
 
-## Create your applicaiton based on swagger docs.
+**Request** (Unsubscribe from all symbols):
+```json
+{
+  "p": "/subscribe/removeAll",
+  "i": 3
+}
+```
+- **p**: Request type.
+- **i**: Request ID.
 
-Swagger interactive API allows you to interact with the server, showing messages sent and received, as well as see the whole communication. You can read more about swagger here: https://swagger.io/
-Additionally, it allows to automatically create API libraries in the most popular programing languages; see: https://swagger.io/tools/swagger-codegen/
+**Response**:
+```json
+{
+  "p": "/subscribe/removeAll",
+  "i": 3
+}
+```
+- **p**: Request type.
+- **i**: The request ID matching the original unsubscribe request.
 
-# Quotes and prices
+---
 
-Quotes and prices cannot be obtained with an http API. Prices change within milliseconds, so you need to connect to a quotes stream. In SimpleFX we use signalr (see https://docs.microsoft.com/en-us/aspnet/signalr ), served from the address  https://webquotes-v3.simplefx.com/signalr/ . You can find the descriptor file here: https://webquotes-v3.simplefx.com/signalr/hubs
+### Get Last Prices
 
-## Obtain last prices
+This request retrieves the last known prices for a set of symbols.
+
+**Request**:
+```json
+{
+  "p": "/lastprices/list",
+  "i": 4,
+  "d": ["BTCUSD", "LTCUSD", "ETHUSD"]
+}
+```
+
+- **p**: Request type.
+- **i**: Request ID.
+- **d**: List of symbols to fetch the last prices for.
+
+**Response**:
+```json
+{
+  "p": "/lastprices/list",
+  "i": 4,
+  "d": [
+    {"s": "BTCUSD", "b": 3930.37, "a": 3979.59, "t": 1643223911},
+    {"s": "LTCUSD", "b": 30.32, "a": 31.81, "t": 1643223911},
+    {"s": "ETHUSD", "b": 112.38, "a": 115.99, "t": 1643223911}
+  ]
+}
+```
+
+- **p**: Request type.
+- **i**: Request ID matching the original request.
+- **d**: List of symbols (`s`) with their bid price (`b`), ask price (`a`), and Unix timestamp (`t`).
+
+---
+
+### Real-Time Quote Updates
+
+Once subscribed, real-time quotes for the subscribed symbols are received automatically via the WebSocket.
+
+**Event - Incoming Quote Update**:
+```json
+{
+  "p": "/quotes/subscribed",
+  "d": [
+    {"s": "BTCUSD", "b": 3930.37, "a": 3979.59, "t": 1643223911},
+    {"s": "LTCUSD", "b": 30.32, "a": 31.81, "t": 1643223911},
+    {"s": "ETHUSD", "b": 112.38, "a": 115.99, "t": 1643223911}
+  ]
+}
+```
+
+- **p**: Event type.
+- **d**: List of symbols (`s`) with their bid price (`b`), ask price (`a`), and Unix timestamp (`t`).
+
+---
+
+# SimpleFX SignalR API
+
+### **Important Note: The SignalR API is Deprecated**
+
+The SimpleFX SignalR API for streaming quotes has been deprecated and will be removed in the future. The current implementation uses **SignalR 2.x** (not **SignalR Core**). There is no plan to migrate the SignalR API to SignalR Core. Please plan accordingly.
+
+Quotes and prices cannot be retrieved via a standard HTTP API because they change within milliseconds. Instead, SimpleFX uses **SignalR** for streaming quotes. You can connect to the quotes stream at this endpoint: [https://webquotes-v3.simplefx.com/signalr/](https://webquotes-v3.simplefx.com/signalr/). The descriptor file is available [here](https://webquotes-v3.simplefx.com/signalr/hubs).
+
+### Obtain Latest Prices
 
 Request:
-```
+```json
 {
- "H":"quotessubscribehub",
- "M":"getLastPrices",
- "A":[["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]],
- "I":0
+  "H": "quotessubscribehub",
+  "M": "getLastPrices",
+  "A": [["BTCUSD", "LTCUSD", "ETHUSD", "TLRY.US", "GWPH.US"]],
+  "I": 0
 }
 ```
-* hub - quotessubscribehub
-* method - getLastPrices
-* arguments:
-  * 0 - list of instruments - ["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]
+Parameters:
+- **hub**: `quotessubscribehub`
+- **method**: `getLastPrices`
+- **arguments**:
+  - 0: List of instruments to request prices for (`["BTCUSD", "LTCUSD", "ETHUSD", "TLRY.US", "GWPH.US"]`).
 
 Response:
-```
+```json
 {
   "R": {
     "data": [
       { "s": "BTCUSD", "b": 3930.37, "a": 3979.59, "t": 1543223911 },
       { "s": "LTCUSD", "b": 30.3267, "a": 31.8091, "t": 1543223911 },
       { "s": "ETHUSD", "b": 112.38, "a": 115.998, "t": 1543223911 },
-      { "s": "TLRY.US","b": 115.39, "a": 116.1, "t": 1542995999 },
+      { "s": "TLRY.US", "b": 115.39, "a": 116.1, "t": 1542995999 },
       { "s": "GWPH.US", "b": 123.57, "a": 124.1, "t": 1542995999 }
     ],
     "code": 200,
@@ -106,32 +266,36 @@ Response:
   "I": "0"
 }
 ```
-* s - symbol of an instrument
-* b - bid price
-* a - ask (offer) price
-* t - unix time stamp of last price
+Fields:
+- **s**: Symbol of the instrument.
+- **b**: Bid price.
+- **a**: Ask (offer) price.
+- **t**: Unix timestamp of the last price update.
 
-## Subscribe for quotes
+### Subscribe to Quotes
 
 Request:
-```
+```json
 {
-  "H":"quotessubscribehub",
-  "M":"subscribeList",
-  "A":[["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]],
-  "I":5
+  "H": "quotessubscribehub",
+  "M": "subscribeList",
+  "A": [["BTCUSD", "LTCUSD", "ETHUSD", "TLRY.US", "GWPH.US"]],
+  "I": 5
 }
 ```
-* hub - quotessubscribehub
-* method - subscribeList
-* arguments:
-  * 0 - list of instruments - ["BTCUSD","LTCUSD","ETHUSD","TLRY.US","GWPH.US"]
+Parameters:
+- **hub**: `quotessubscribehub`
+- **method**: `subscribeList`
+- **arguments**:
+  - 0: List of instruments (`["BTCUSD", "LTCUSD", "ETHUSD", "TLRY.US", "GWPH.US"]`).
 
-Response - subscribe confirmation:
-`{"R":{"code":200,"message":"OK","webRequestId":null},"I":"5"}`
-
-Events - incoming quotes
+Response (Subscription Confirmation):
+```json
+{"R":{"code":200,"message":"OK","webRequestId":null},"I":"5"}
 ```
+
+Incoming Quote Events:
+```json
 {
   "C": "d-7964E528-B,0|_7,1|_8,1",
   "M": [
