@@ -12,12 +12,13 @@
 4. Click **Create API Key**.
 5. Fill in the API Key creation fields:
    * **Name**: Choose any name you prefer.
-   * **Trade Permissions**: Select all available checkboxes to grant your key full permissions.
-   * **IP Address Whitelist**: Leave this field empty if you want your key to be accessible from anywhere.
+   * **Trade Permissions**: Select checkboxes with permissions you need.
+   * **IP Address Whitelist**: Add your public IP address or leave this field empty if you want your key to be accessible from anywhere.
 6. Click **Create**.
-7. **Copy and save your API key secret**, as you will not be able to view it again.
+7. Copy and save your **API key secret**, as you will not be able to view it again.
 8. Go back to the **API Key Manager**; your key should appear in either the confirmed or pending list.
-9. Confirm your API key using two-factor authentication (2FA) or, if 2FA is not configured, via the email confirmation link.
+9. Copy **API key ID** for the newly created key.
+10. Confirm your API key using two-factor authentication (2FA) or, if 2FA is not configured, via the email confirmation link.
 
 ### Try the Interactive API
 
