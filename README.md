@@ -75,15 +75,14 @@ Swagger’s interactive API lets you test server interactions, view messages sen
 
 # SimpleFX WebSocket API Documentation
 
+Quotes and prices cannot be retrieved via a REST HTTP API because they change within milliseconds. Instead, SimpleFX uses **WebSocket** for streaming quotes.
+
 ## WebSocket Connection
 
 The WebSocket connection is established at:  
-`wss://web-quotes.simplefx.com/websocket/quotes`
+`wss://web-quotes-core.simplefx.com/websocket/quotes`
 
-To access the WebSocket API, you must first authenticate using the SimpleFX REST API and obtain an access token.
-
-### WebSocket Authentication
-Before sending any messages, you need to authenticate by passing a valid token obtained from the REST API. Without authentication, WebSocket requests will fail.
+Once connected, the serwer will emit `/quotes/subscribed` event with a list of last prices.
 
 ---
 
@@ -143,6 +142,7 @@ To unsubscribe from a list of symbols or all symbols:
 - **p**: Request type.
 - **i**: The request ID matching the original unsubscribe request.
 
+
 **Request** (Unsubscribe from all symbols):
 ```json
 {
@@ -178,7 +178,7 @@ This request retrieves the last known prices for a set of symbols.
 }
 ```
 
-- **p**: Path to request the last prices for the symbols.
+- **p**: Request type.
 - **i**: Request ID.
 - **d**: List of symbols to fetch the last prices for.
 
@@ -195,9 +195,9 @@ This request retrieves the last known prices for a set of symbols.
 }
 ```
 
-- **p**: Path confirming the response to the last prices request.
+- **p**: Request type.
 - **i**: Request ID matching the original request.
-- **d**: List of symbols with their bid (`b`), ask (`a`), and timestamp (`t`).
+- **d**: List of symbols (`s`) with their bid price (`b`), ask price (`a`), and Unix timestamp (`t`).
 
 ---
 
@@ -208,56 +208,17 @@ Once subscribed, real-time quotes for the subscribed symbols are received automa
 **Event - Incoming Quote Update**:
 ```json
 {
-  "C": "d-7964E528-B,0|_7,1|_8,1",
-  "M": [
-    {
-      "H": "QuotesSubscribeHub",
-      "M": "ReceiveQuotes",
-      "A": [
-        [
-          {"s": "BTCUSD", "b": 3930.35, "a": 3979.67, "t": 1643223912},
-          {"s": "ETHUSD", "b": 112.38, "a": 115.99, "t": 1643223912}
-        ]
-      ]
-    }
+  "p": "/quotes/subscribed",
+  "d": [
+    {"s": "BTCUSD", "b": 3930.37, "a": 3979.59, "t": 1643223911},
+    {"s": "LTCUSD", "b": 30.32, "a": 31.81, "t": 1643223911},
+    {"s": "ETHUSD", "b": 112.38, "a": 115.99, "t": 1643223911}
   ]
 }
 ```
 
-- **s**: Symbol of the instrument.
-- **b**: Bid price.
-- **a**: Ask (offer) price.
-- **t**: Unix timestamp of the last price update.
-
----
-
-### Error Messages
-
-If there is an issue with your WebSocket request, you may receive an error message.
-
-**Error Response Example**:
-```json
-{
-  "e": {
-    "code": 400,
-    "message": "Invalid symbol list"
-  }
-}
-```
-- **e**: Error object.
-  - **code**: HTTP-like error code.
-  - **message**: Description of the error.
-
----
-
-## WebSocket Disconnection
-
-To disconnect from the WebSocket quotes stream, you can send a disconnection request, or simply close the WebSocket connection. 
-
-**Disconnection Example**:
-```json
-WebSocket connection closed for client.
-```
+- **p**: Event type.
+- **d**: List of symbols (`s`) with their bid price (`b`), ask price (`a`), and Unix timestamp (`t`).
 
 ---
 
@@ -265,7 +226,7 @@ WebSocket connection closed for client.
 
 ### **Important Note: The SignalR API is Deprecated**
 
-The SimpleFX SignalR API for streaming quotes has been deprecated. The current implementation uses **SignalR 2.x** (not **SignalR Core**). There is no plan to migrate the SignalR API to SignalR Core. Please plan accordingly.
+The SimpleFX SignalR API for streaming quotes has been deprecated and will be removed in the future. The current implementation uses **SignalR 2.x** (not **SignalR Core**). There is no plan to migrate the SignalR API to SignalR Core. Please plan accordingly.
 
 Quotes and prices cannot be retrieved via a standard HTTP API because they change within milliseconds. Instead, SimpleFX uses **SignalR** for streaming quotes. You can connect to the quotes stream at this endpoint: [https://webquotes-v3.simplefx.com/signalr/](https://webquotes-v3.simplefx.com/signalr/). The descriptor file is available [here](https://webquotes-v3.simplefx.com/signalr/hubs).
 
